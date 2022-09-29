@@ -17,8 +17,8 @@ datasets:
       type: disk
 
     gt_size: 256
-    use_hflip: true
-    use_rot: false
+    use_hflip: true  # horizontalflip
+    use_rot: false  # verticalflip + rotation
 
     # data loader
     use_shuffle: true
@@ -95,10 +95,10 @@ train:
     loss_weight: 1.0
     reduction: mean
     
-    # type: PSNRLoss
+    # type: PSNRLoss  # it will return minus value
     # loss_weight: 1.0
     # reduction: mean
-    # toY: true
+    # toY: true  # on y channel
 
 # validation settings
 val:
@@ -109,18 +109,18 @@ val:
   metrics:
     psnr:
       type: calculate_psnr
-      crop_border: 0
-      test_y_channel: true
+      crop_border: 0  # exlude border
+      test_y_channel: true  # on y channel
       better: higher  # the higher, the better. Default: higher
     ssim:
       type: calculate_ssim
-      crop_border: 0
-      test_y_channel: true
+      crop_border: 0  # exlude border
+      test_y_channel: true  # on y channel
       better: higher  # the higher, the better. Default: higher
 
 # logging settings
 logger:
-  print_freq: 2952 # 2952
+  print_freq: 2952  # 2952
   save_checkpoint_freq: 11808
   use_tb_logger: true
   wandb:
