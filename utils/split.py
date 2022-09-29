@@ -6,6 +6,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--src", type=str, default='test/lr')
+    parser.add_argument("--src_size", type=int, default=512)
     parser.add_argument("--dst", type=str, default='results_split')
     parser.add_argument("--dst_suffix", type=str, default='.png')
     parser.add_argument("--vertical", type=int, default=2)
@@ -19,8 +20,8 @@ if __name__ == '__main__':
         src_path = os.path.join(args.src, test_img)
         src = cv2.imread(src_path, cv2.IMREAD_COLOR)
 
-        x_size = int(512 / args.vertical)
-        y_size = int(512 / args.horizontal)
+        x_size = int(args.src_size / args.vertical)
+        y_size = int(args.src_size / args.horizontal)
         
         for x in range(args.vertical):
             for y in range(args.horizontal):
