@@ -1,3 +1,5 @@
+# https://github.com/megvii-research/NAFNet/blob/main/basicsr/models/losses/losses.py
+
 import torch
 from torch import nn as nn
 
@@ -7,7 +9,7 @@ from basicsr.utils.color_util import rgb2ycbcr_pt
 import numpy as np
 
 def psnr_loss(pred, target):
-    return -torch.log(((pred - target) ** 2).mean(dim=(1, 2, 3)) + 1e-8).mean()
+    return torch.log(((pred - target) ** 2).mean(dim=(1, 2, 3)) + 1e-8).mean()
 
 @LOSS_REGISTRY.register()
 class PSNRLoss(nn.Module):
@@ -18,7 +20,7 @@ class PSNRLoss(nn.Module):
         self.scale = 10. / np.log(10)
         self.toY = toY
 
-    def forward(self, pred, target, **kwargs):
+    def forward(self, pred, target):
         pred = rgb2ycbcr_pt(pred, y_only=self.toY)
         target = rgb2ycbcr_pt(target, y_only=self.toY)
 
