@@ -6,6 +6,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--src", type=str, default='test/lr')
+    parser.add_argument("--src_size", type=int, default=512)
     parser.add_argument("--dst", type=str, default='results_rescale')
     parser.add_argument("--dst_size", type=int, default=2048)
     parser.add_argument("-i", "--interpolation", type=str, default='lanczos4')
@@ -15,9 +16,8 @@ if __name__ == '__main__':
         os.makedirs(args.dst, exist_ok=True)
 
     dsize = (args.dst_size, args.dst_size)
-
-    # Assume that src_size = 512
-    if args.dst_size > 512:
+    
+    if args.dst_size > args.src_size:
         if args.interpolation == 'lanczos4':
             interpolation = cv2.INTER_LANCZOS4
         elif args.interpolation == 'cubic':
