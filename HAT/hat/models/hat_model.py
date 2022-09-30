@@ -1,6 +1,8 @@
 import torch
 from torch.nn import functional as F
 
+from torchvision.transforms.functional import hflip, vflip
+
 from basicsr.utils.registry import MODEL_REGISTRY
 from basicsr.models.sr_model import SRModel
 from basicsr.metrics import calculate_metric
@@ -86,6 +88,19 @@ class HATModel(SRModel):
                         self.net_g.eval()
                         with torch.no_grad():
                             output_tile = self.net_g(input_tile)
+
+                            if self.opt['hflip'] or self.opt['vflip']:
+                                output_tile = output_tile.unsqueeze(-1)
+                                if self.opt['hflip']:
+                                    output_tile_h = hflip(self.net_g(hflip(input_tile))).unsqueeze(-1)
+                                if self.opt['vflip']:
+                                    output_tile_v = vflip(self.net_g(vflip(input_tile))).unsqueeze(-1)
+                                if self.opt['hflip'] and self.opt['vflip']:
+                                    output_tile_hv = hflip(vflip(self.net_g(vflip(hflip(input_tile))))).unsqueeze(-1)
+                                
+                                output_tile = torch.mean(torch.cat(
+                                    (output_tile, output_tile_h, output_tile_v, output_tile_hv), -1), -1)
+                                
                 except RuntimeError as error:
                     print('Error', error)
                 print(f'\tTile {tile_idx}/{tiles_x * tiles_y}')
