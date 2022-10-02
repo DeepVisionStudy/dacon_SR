@@ -46,4 +46,4 @@ if __name__ == '__main__':
         cv2.imshow("Thresh", cv2.resize(thresh, dsize=(args.plot_size, args.plot_size)))
         cv2.waitKey(0)
 
-# python utils/show_diff.py --A HAT/results/HAT_Dacon_256_64_hv --B HAT/results/HAT_Dacon_uformer --num 20000
+# python utils/show_difference.py --A HAT/results/HAT_Dacon_256_64_hv --B HAT/results/HAT_Dacon_uformer --num 20000
