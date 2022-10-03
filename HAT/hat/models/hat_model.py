@@ -90,16 +90,16 @@ class HATModel(SRModel):
                             output_tile = self.net_g(input_tile)
 
                             if self.opt['hflip'] or self.opt['vflip']:
-                                output_tile = output_tile.unsqueeze(-1)
+                                output_tile_list = []
+                                output_tile_list.append(output_tile.unsqueeze(-1))
                                 if self.opt['hflip']:
-                                    output_tile_h = hflip(self.net_g(hflip(input_tile))).unsqueeze(-1)
+                                    output_tile_list.append(hflip(self.net_g(hflip(input_tile))).unsqueeze(-1))
                                 if self.opt['vflip']:
-                                    output_tile_v = vflip(self.net_g(vflip(input_tile))).unsqueeze(-1)
+                                    output_tile_list.append(vflip(self.net_g(vflip(input_tile))).unsqueeze(-1))
                                 if self.opt['hflip'] and self.opt['vflip']:
-                                    output_tile_hv = hflip(vflip(self.net_g(vflip(hflip(input_tile))))).unsqueeze(-1)
+                                    output_tile_list.append(hflip(vflip(self.net_g(vflip(hflip(input_tile))))).unsqueeze(-1))
                                 
-                                output_tile = torch.mean(torch.cat(
-                                    (output_tile, output_tile_h, output_tile_v, output_tile_hv), -1), -1)
+                                output_tile = torch.mean(torch.cat(output_tile_list, -1), -1)
                                 
                 except RuntimeError as error:
                     print('Error', error)
