@@ -1,5 +1,5 @@
 # general settings
-name: train_HAT_Dacon_base
+name: _train_HAT_split64_DownScaleLoss
 model_type: HATModel
 scale: 4
 num_gpu: 1
@@ -10,15 +10,15 @@ datasets:
   train:
     name: train
     type: PairedImageDataset
-    dataroot_gt: ../train_val_split_seed0_size0.1/split64/train/hr
-    dataroot_lq: ../train_val_split_seed0_size0.1/split64/train/lr
-    meta_info_file: ./hat/data/meta_info/meta_info_train_hr.txt
+    dataroot_gt: ../dataset/seed0_size0.02/split64/train/hr
+    dataroot_lq: ../dataset/seed0_size0.02/split64/train/lr
+    meta_info_file: ./hat/data/meta_info/seed0_size0.02_split64_train_hr.txt
     io_backend:
       type: disk
 
     gt_size: 256
     use_hflip: true  # horizontalflip
-    use_rot: false  # verticalflip + rotation
+    use_rot: true  # verticalflip + rotation90
 
     # data loader
     use_shuffle: true
@@ -31,8 +31,32 @@ datasets:
   val_1:
     name: valid
     type: PairedImageDataset
-    dataroot_gt: ../train_val_split_seed0_size0.1/split64/valid/hr
-    dataroot_lq: ../train_val_split_seed0_size0.1/split64/valid/lr
+    dataroot_gt: ../dataset/seed0_size0.02/split16/valid/hr
+    dataroot_lq: ../dataset/seed0_size0.02/split16/valid/lr
+    io_backend:
+      type: disk
+  
+  val_2:
+    name: set5
+    type: PairedImageDataset
+    dataroot_gt: ../dataset/Set5/GTmod12
+    dataroot_lq: ../dataset/Set5/LRbicx4
+    io_backend:
+      type: disk
+  
+  val_3:
+    name: set14
+    type: PairedImageDataset
+    dataroot_gt: ../dataset/Set14/GTmod12
+    dataroot_lq: ../dataset/Set14/LRbicx4
+    io_backend:
+      type: disk
+  
+  val_4:
+    name: urban100
+    type: PairedImageDataset
+    dataroot_gt: ../dataset/urban100/hr
+    dataroot_lq: ../dataset/urban100/lr
     io_backend:
       type: disk
 
@@ -61,6 +85,7 @@ path:
   param_key_g: 'params_ema'
   strict_load_g: true
   resume_state: ~
+  
 
 # training settings
 train:
@@ -71,22 +96,17 @@ train:
     weight_decay: 0
     betas: [0.9, 0.99]
 
-    # type: SGD
-    # lr: !!float 1e-4
-    # weight_decay: 0
-
   scheduler:
     type: CosineAnnealingRestartLR
-    periods: [47232]
+    periods: [51424]
     restart_weights: [1.0]
     eta_min: !!float 1e-6
 
     # type: MultiStepLR
-    # milestones: [23616, 35424, 41328, 44280]
+    # milestones: [23616, 23616, 23616, 23616]
     # gamma: 0.5
 
-
-  total_iter: 47232  # 1 epoch : 47232
+  total_iter: 51424  # 1 epoch = 51424 iter
   warmup_iter: -1  # no warm up
 
   # losses
@@ -94,15 +114,36 @@ train:
     type: L1Loss
     loss_weight: 1.0
     reduction: mean
+
+  pixel_opt_2:
+    type: DownScaleLoss
+    loss_weight: 0.5
+    reduction: mean
     
     # type: PSNRLoss  # it will return minus value
     # loss_weight: 1.0
     # reduction: mean
     # toY: true  # on y channel
+  
+  # perceptual_opt:
+  #   type: PerceptualLoss
+  #   layer_weights:
+  #     # before relu
+  #     'conv1_2': 0.1
+  #     'conv2_2': 0.1
+  #     'conv3_4': 1
+  #     'conv4_4': 1
+  #     'conv5_4': 1
+  #   vgg_type: vgg19
+  #   use_input_norm: true
+  #   perceptual_weight: !!float 1e-3
+  #   style_weight: 0
+  #   range_norm: false
+  #   criterion: l1
 
 # validation settings
 val:
-  val_freq: 50000
+  val_freq: 12856
   save_img: false
   pbar: False
 
@@ -120,9 +161,9 @@ val:
 
 # logging settings
 logger:
-  print_freq: 2952  # 2952
-  save_checkpoint_freq: 11808
-  use_tb_logger: true
+  print_freq: 1607
+  save_checkpoint_freq: 51424
+  use_tb_logger: false
   wandb:
-    project: Dacon_SR
+    project: ~
     resume_id: ~
