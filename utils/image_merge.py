@@ -6,13 +6,14 @@ import numpy as np
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--src", type=str, default='HAT/results/HAT_SRx4_Dacon/visualization/test')
-    parser.add_argument("--src_suffix", type=str, default='_HAT_SRx4_Dacon.png')
+    parser.add_argument("--src", type=str, default='HAT/results/HAT_Dacon/visualization/test')
     parser.add_argument("--dst", type=str, default='results_merge')
     parser.add_argument("--dst_size", type=int, default=2048)
     parser.add_argument("--vertical", type=int, default=2)
     parser.add_argument("--horizontal", type=int, default=2)
     args = parser.parse_args()
+
+    args.src_suffix = '_' + args.src.split('/')[2] + '.png'
 
     if not os.path.exists(args.dst):
         os.makedirs(args.dst, exist_ok=True)
